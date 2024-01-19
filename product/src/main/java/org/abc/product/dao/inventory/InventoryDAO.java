@@ -29,9 +29,9 @@ public interface InventoryDAO {
      * Removes the product from the inventory.
      * </p>
      *
-     * @param product Refers the {@link Product} to be removed.
+     * @param productId Refers the id of the {@link Product} to be removed.
      */
-    void removeItem(final Product product);
+    void removeItem(final int productId);
 
     /**
      * <p>
@@ -40,5 +40,5 @@ public interface InventoryDAO {
      *
      * @return all the {@link Product} from the inventory.
      */
-    List<Product> getItemsByCategory(final ProductCategory productCategory);
+    List<? extends Product> getItemsByCategory(final ProductCategory productCategory);
 }

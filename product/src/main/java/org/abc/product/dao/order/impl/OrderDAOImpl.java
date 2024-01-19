@@ -5,7 +5,6 @@ import org.abc.product.PaymentMode;
 import org.abc.product.ProductCategory;
 import org.abc.authentication.exceptions.UpdateActionFailedException;
 import org.abc.authentication.exceptions.UserNotFoundException;
-import org.abc.authentication.model.User;
 import org.abc.product.dao.order.OrderDAO;
 import org.abc.dbconnection.connection.DBConnection;
 import org.abc.product.exceptions.ItemUpdateFailedException;
@@ -68,7 +67,9 @@ public class OrderDAOImpl implements OrderDAO {
         final int paymentModeId = order.getPaymentMode().getId();
         final int orderStatusId = order.getOrderStatus().getId();
 
-        try (final PreparedStatement preparedStatement = DBConnection.getConnection().prepareStatement("insert into orders(user_id, product_id, address, payment_mode_id, quantity, total_amount, order_status_id) values (?,?,?,?,?,?,?) ")) {
+        try (final PreparedStatement preparedStatement = DBConnection.getConnection()
+                .prepareStatement(String.join(" ", "insert into orders(user_id, product_id,",
+                        "address, payment_mode_id, quantity, total_amount, order_status_id) values (?,?,?,?,?,?,?)"))) {
             preparedStatement.setInt(1, userId);
             preparedStatement.setInt(2, productId);
             preparedStatement.setString(3, address);
@@ -93,7 +94,8 @@ public class OrderDAOImpl implements OrderDAO {
      * @param quantity Refers the quantity to be updated.
      */
     private void updateQuantity(final int productId, final int quantity) {
-        try (final PreparedStatement preparedStatement = DBConnection.getConnection().prepareStatement("update product set quantity = quantity - ? where id =?")) {
+        try (final PreparedStatement preparedStatement = DBConnection.getConnection()
+                .prepareStatement("update product set quantity = quantity - ? where id =?")) {
             preparedStatement.setInt(1, quantity);
             preparedStatement.setInt(2, productId);
             preparedStatement.executeUpdate();
@@ -112,7 +114,8 @@ public class OrderDAOImpl implements OrderDAO {
      */
     @Override
     public void cancelOrder(final Order order) {
-        try (final PreparedStatement preparedStatement = DBConnection.getConnection().prepareStatement("update orders set order_status_id =? where id =?")) {
+        try (final PreparedStatement preparedStatement = DBConnection.getConnection()
+                .prepareStatement("update orders set order_status_id =? where id =?")) {
             preparedStatement.setInt(1, OrderStatus.CANCELLED.getId());
             preparedStatement.setInt(2, order.getId());
             preparedStatement.executeUpdate();
@@ -135,7 +138,12 @@ public class OrderDAOImpl implements OrderDAO {
     public List<Order> getOrders(final int userId) {
         final List<Order> orders = new ArrayList<>();
 
-        try (final PreparedStatement preparedStatement = DBConnection.getConnection().prepareStatement("select o.id,o.product_id, o.payment_mode_id,o.quantity,o.total_amount, o.address,o.order_status_id, p.product_category_id, e.brand,e.model, p.price,c.clothes_type,c.size,c.gender, c.brand from orders o join product p on o.product_id=p.id  left join electronics_inventory e on o.product_id = e.product_id left join clothes_inventory c on o.product_id=c.product_id where o.user_id = ?")) {
+        try (final PreparedStatement preparedStatement = DBConnection.getConnection()
+                .prepareStatement(String.join(" ", "select o.id,o.product_id,",
+                        "o.payment_mode_id,o.quantity,o.total_amount, o.address,o.order_status_id, p.product_category_id,",
+                        "e.brand,e.model, p.price,c.clothes_type,c.size,c.gender, c.brand from orders o join product p",
+                        "on o.product_id=p.id  left join electronics_inventory e on o.product_id = e.product_id",
+                        "left join clothes_inventory c on o.product_id=c.product_id where o.user_id=?"))) {
             preparedStatement.setInt(1, userId);
             final ResultSet resultSet = preparedStatement.executeQuery();
 
@@ -165,7 +173,7 @@ public class OrderDAOImpl implements OrderDAO {
                     final String brand = resultSet.getString(15);
                     productName = String.format("%s brand :%s size : %s gender: %s - Rs :%.2f ", clothesType, brand, size, gender, price);
                 }
-                final Order order = new Order.OrderBuilder(userId, productId, paymentMode).setId(orderId).setProductName(productName).setTotalAmount(totalAmount).setQuantity(quantity).setAddress(address).setOrderStatus(orderStatus).buildOrder();
+                final Order order = new Order.OrderBuilder(userId, productId, paymentMode).setId(orderId).setProductName(productName).setTotalAmount(totalAmount).setQuantity(quantity).setAddress(address).setOrderStatus(orderStatus).build();
 
                 orders.add(order);
             }
@@ -181,15 +189,16 @@ public class OrderDAOImpl implements OrderDAO {
      * Gets all the addresses of the user.
      * </p>
      *
-     * @param user Refers the current {@link User}.
+     * @param userId Refers the id of the user.
      * @return the list of all the address.
      */
     @Override
-    public List<String> getAllAddresses(final User user) {
+    public List<String> getAllAddresses(final int userId) {
         final List<String> addresses = new ArrayList<>();
 
-        try (final PreparedStatement preparedStatement = DBConnection.getConnection().prepareStatement("select address from address join users on users.id=address.user_id where user_id =?")) {
-            preparedStatement.setInt(1, user.getId());
+        try (final PreparedStatement preparedStatement = DBConnection.getConnection()
+                .prepareStatement("select address from address join users on users.id=address.user_id where user_id =?")) {
+            preparedStatement.setInt(1, userId);
             final ResultSet resultSet = preparedStatement.executeQuery();
 
             while (resultSet.next()) {
@@ -208,16 +217,16 @@ public class OrderDAOImpl implements OrderDAO {
      * Adds the address of the user.
      * </p>
      *
-     * @param user Refers the current {@link User} .
+     * @param userId Refers the id of the user.
      * @param address Refers the address to be added.
      */
     @Override
-    public void addAddress(final User user, final String address) {
-        try (final PreparedStatement preparedStatement = DBConnection.getConnection().prepareStatement("insert into address(user_id, address) values (?,?)")) {
-            preparedStatement.setInt(1, user.getId());
+    public void addAddress(final int userId, final String address) {
+        try (final PreparedStatement preparedStatement = DBConnection.getConnection()
+                .prepareStatement("insert into address(user_id, address) values (?,?)")) {
+            preparedStatement.setInt(1, userId);
             preparedStatement.setString(2, address);
             preparedStatement.executeUpdate();
-            DBConnection.getConnection().commit();
         } catch (final SQLException exception) {
             throw new UpdateActionFailedException(exception.getMessage());
         }

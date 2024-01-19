@@ -1,4 +1,4 @@
-package src.main.java.org.abc.product.service.order;
+package org.abc.product.service.order;
 
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 
@@ -21,7 +21,7 @@ public class RestService {
     @Activate
     public void activate() throws Exception {
         JAXRSServerFactoryBean bean = new JAXRSServerFactoryBean();
-        bean.setAddress("/user/order");
+        bean.setAddress("/order");
         bean.setBus(BusFactory.getDefaultBus());
         bean.setProvider(new JacksonJsonProvider());
         bean.setServiceBean(OrderController.getInstance());

@@ -6,6 +6,7 @@ import org.abc.pageview.PageViewer;
 import org.abc.singleton_scanner.SingletonScanner;
 import org.abc.validation.Validator;
 
+import java.util.Objects;
 import java.util.Scanner;
 
 import org.apache.logging.log4j.Logger;
@@ -43,7 +44,7 @@ public class AuthenticationView {
      * @return the single instance of AuthenticationView class.
      */
     public static AuthenticationView getInstance() {
-        return authenticationView == null ? authenticationView = new AuthenticationView() : authenticationView;
+        return Objects.isNull(authenticationView) ? authenticationView = new AuthenticationView() : authenticationView;
     }
 
     /**
@@ -62,8 +63,7 @@ public class AuthenticationView {
                 login();
                 break;
             case 3:
-                return;
-               //exit();
+                exit();
             default:
                LOGGER.warn("Enter a valid choice");
                showAuthenticationPage();
@@ -122,31 +122,28 @@ public class AuthenticationView {
      * </p>
      */
     private void login() {
-        String emailIdOrMobileNumber = null;
-
         LOGGER.info("Login : [Press '$' to go back] \n1.Mobile number\n2.Email Id \nEnter your choice:");
-        final int choice = getChoice();                  // -1 is returned if back key is pressed
+        final int choice = getChoice();
 
         toGoBack(choice);
 
-        switch (choice) {
-            case 1:
-                emailIdOrMobileNumber = getMobileNumber();
-                break;
-            case 2:
-                emailIdOrMobileNumber = getEmailId();
-                break;
-            default:
+        final String emailIdOrMobileNumber = switch (choice) {
+            case 1 -> getMobileNumber();
+            case 2 -> getEmailId();
+            default -> {
                 LOGGER.warn("Enter a valid choice");
                 login();
-        }
+                yield null;
+            }
+        };
+
         LOGGER.info("Enter the Password :");
         final String password = SCANNER.nextLine();
 
         toGoBack(password);
         final User user = USER_CONTROLLER.getUser(emailIdOrMobileNumber, password);
 
-        if (null != user) {
+        if (Objects.nonNull(user)) {
             LOGGER.info("Login successful");
             homePageView.viewPage(user);
         } else {

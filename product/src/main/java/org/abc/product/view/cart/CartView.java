@@ -12,6 +12,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * <p>
@@ -42,7 +43,7 @@ public class CartView extends View {
      * @return the single instance of CartView class.
      */
     public static CartView getInstance() {
-        return cartView == null ? cartView = new CartView() : cartView;
+        return Objects.isNull(cartView) ? cartView = new CartView() : cartView;
     }
 
     /**
@@ -60,7 +61,7 @@ public class CartView extends View {
             return false;
         }
 
-        if (CART_CONTROLLER.addItem(product, user)) {
+        if (CART_CONTROLLER.addItem(product.getId(), user.getId(), product.getProductCategory())) {
             LOGGER.info(String.format("User id :%d Product Id :%d - Item added to the cart", user.getId(), product.getId()));
 
             return true;
@@ -78,9 +79,9 @@ public class CartView extends View {
      * @param user Refers the current {@link User}
      */
     public void viewCart(final User user) {
-        final Cart cart = CART_CONTROLLER.getCart(user);
+        final Cart cart = CART_CONTROLLER.getCart(user.getId());
 
-        if (null == cart || null == cart.getItems()) {
+        if (Objects.isNull(cart) || Objects.isNull(cart.getItems())) {
             LOGGER.info(String.format("User id :%d-Cart is empty", user.getId()));
             HomepageView.getInstance().showHomePage(user);
         } else {
@@ -113,7 +114,7 @@ public class CartView extends View {
         }
 
         if ((items.size() >= productId)) {
-            final Product item = items.get(productId - 1);
+            final Product product = items.get(productId - 1);
 
             LOGGER.info("Enter '1' to place order or '2' to remove from cart.\nEnter a choice");
             final int choice = getChoice();
@@ -123,23 +124,23 @@ public class CartView extends View {
             }
 
             switch (choice) {
-                case 1:
-                    if ((0 < item.getQuantity())) {
-                        OrderView.getInstance().placeOrder(item, user);
+                case 1 -> {
+                    if ((0 < product.getQuantity())) {
+                        OrderView.getInstance().placeOrder(product, user);
                     } else {
-                        LOGGER.warn(String.format("User id :%d Product Id :%d -The item is out of stock", user.getId(), item.getId()));
+                        LOGGER.warn(String.format("User id :%d Product Id :%d -The product is out of stock", user.getId(), product.getId()));
                         placeOrderOrRemoveItem(items, user);
                     }
-                    break;
-                case 2:
-                    CART_CONTROLLER.removeItem(item, user);
-                    LOGGER.info(String.format("User id :%d Product Id :%d -Item removed from the cart", user.getId(), item.getId()));
+                }
+                case 2 -> {
+                    CART_CONTROLLER.removeItem(product.getId(), user.getId());
+                    LOGGER.info(String.format("User id :%d Product Id :%d -Item removed from the cart", user.getId(), product.getId()));
                     placeOrderOrRemoveItem(items, user);
-                    break;
-                default:
+                }
+                default -> {
                     LOGGER.warn("Invalid choice");
                     placeOrderOrRemoveItem(items, user);
-                    break;
+                }
             }
         } else {
             LOGGER.warn("Invalid product id");

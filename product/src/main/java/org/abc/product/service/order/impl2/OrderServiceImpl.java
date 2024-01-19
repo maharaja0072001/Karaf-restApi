@@ -1,12 +1,12 @@
 package org.abc.product.service.order.impl2;
 
-import org.abc.authentication.model.User;
 import org.abc.product.dao.order.impl.OrderDAOImpl;
 import org.abc.product.dao.order.OrderDAO;
 import org.abc.product.model.order.Order;
 import org.abc.product.service.order.OrderService;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * <p>
@@ -36,7 +36,7 @@ public class OrderServiceImpl implements OrderService {
      * @return returns the single instance of OrderServiceImpl Class.
      */
     public static OrderService getInstance() {
-        return orderService == null ? orderService = new OrderServiceImpl() : orderService;
+        return Objects.isNull(orderService) ? orderService = new OrderServiceImpl() : orderService;
     }
 
     /**
@@ -82,12 +82,12 @@ public class OrderServiceImpl implements OrderService {
      * Adds the address of the user.
      * </p>
      *
-     * @param user Refers the current {@link User} .
+     * @param userId Refers the id of the user.
      * @param address Refers the address to be added.
      */
     @Override
-    public void addAddress(final User user, final String address) {
-        ORDER_DAO.addAddress(user, address);
+    public void addAddress(final int userId, final String address) {
+        ORDER_DAO.addAddress(userId, address);
     }
 
     /**
@@ -95,11 +95,11 @@ public class OrderServiceImpl implements OrderService {
      * Gets all the addresses of the user.
      * </p>
      *
-     * @param user Refers the current {@link User}.
+     * @param userId Refers the id of the user.
      * @return the list of all the address.
      */
     @Override
-    public List<String> getAllAddresses(final User user) {
-        return ORDER_DAO.getAllAddresses(user);
+    public List<String> getAllAddresses(final int userId) {
+        return ORDER_DAO.getAllAddresses(userId);
     }
 }

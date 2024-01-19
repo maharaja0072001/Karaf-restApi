@@ -5,7 +5,6 @@ import org.abc.dbconnection.exceptions.ConnectionFailedException;
 import java.io.FileReader;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.SQLException;
 import java.util.Objects;
 import java.util.Properties;
 
@@ -39,14 +38,16 @@ public class DBConnection {
      *
      * @return {@link Connection} of the database.
      */
-    public static Connection getConnection() throws SQLException {
+    public static Connection getConnection() {
         if (Objects.isNull(connection)) {
             final Properties properties = new Properties();
 
-            try (final FileReader fileReader = new FileReader(String.join("",System.getenv("DB_CONFIG_PATH"), "/db.properties"))) {
+            try (final FileReader fileReader = new FileReader(String.join("",
+                    System.getenv("DB_CONFIG_PATH"), "/db.properties"))) {
                 properties.load(fileReader);
                 Class.forName("org.postgresql.Driver");
-                connection = DriverManager.getConnection(properties.getProperty("url"), properties.getProperty("username"), properties.getProperty("password"));
+                connection = DriverManager.getConnection(properties.getProperty("url"),
+                        properties.getProperty("username"), properties.getProperty("password"));
 
                 LOGGER.info("Database is connected");
             } catch (final Exception exception) {

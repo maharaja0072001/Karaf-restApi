@@ -1,12 +1,13 @@
 package org.abc.product.service.cart.impl;
 
+import org.abc.product.ProductCategory;
+import org.abc.product.controller.inventory.InventoryController;
 import org.abc.product.model.cart.Cart;
-import org.abc.authentication.model.User;
-import org.abc.product.model.product.Product;
 import org.abc.product.service.cart.CartService;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * <p>
@@ -36,7 +37,7 @@ public class CartServiceImpl implements CartService {
      * @return returns the single instance of CartServiceImpl Class.
      */
     public static CartService getInstance() {
-        return cartService == null ? cartService = new CartServiceImpl() : cartService;
+        return Objects.isNull(cartService) ? cartService = new CartServiceImpl() : cartService;
     }
 
     /**
@@ -44,17 +45,19 @@ public class CartServiceImpl implements CartService {
      * Adds the product to the cart of the user.
      * </p>
      *
-     * @param product Refers the {@link Product} to be added to the cart.
-     * @param user Refers the current {@link User}.
+     * @param productId Refers the id of the product to be added to the cart.
+     * @param userId Refers the user id.
+     * @param productCategory Refers the category of product.
+     * @return true if the product is added or false otherwise.
      */
     @Override
-    public boolean addItem(final Product product, final User user) {
-        if (!CARTS.containsKey(user.getId())) {
-             CARTS.put(user.getId(), new Cart());
-        }
-        final Cart cart = CARTS.get(user.getId());
+    public boolean addItem(final int productId, final int userId, final ProductCategory productCategory) {
+        CARTS.computeIfAbsent(userId, key -> new Cart());
+        final Cart cart = CARTS.get(userId);
 
-        return cart.addItem(product);
+        return InventoryController.getInstance().getItemsByCategory(productCategory).stream()
+                .filter(product -> productId == product.getId())
+                .findFirst().map(cart::addItem).orElse(false);
     }
 
     /**
@@ -62,14 +65,14 @@ public class CartServiceImpl implements CartService {
      * Removes the specific product from the cart.
      * </p>
      *
-     * @param user Refers the current {@link User}
-     * @param product Refers the {@link Product} to be removed from the cart.
+     * @param userId Refers the user id.
+     * @param productId Refers the id of the product to be removed from the cart.
      */
     @Override
-    public void removeItem(final Product product, final User user) {
-        final Cart cart = CARTS.get(user.getId());
+    public void removeItem(final int productId, final int userId) {
+        final Cart cart = CARTS.get(userId);
 
-        cart.removeItem(product);
+        cart.getItems().removeIf(product -> productId == product.getId());
     }
 
     /**
@@ -77,11 +80,11 @@ public class CartServiceImpl implements CartService {
      * Gets the cart of the current user and returns it.
      * </p>
      *
-     * @param user Refers the current {@link User}
+     * @param userId Refers the user id.
      * @return the {@link Cart} of the user.
      */
     @Override
-    public Cart getCart(final User user) {
-        return CARTS.get(user.getId());
+    public Cart getCart(final int userId) {
+        return CARTS.get(userId);
     }
 }

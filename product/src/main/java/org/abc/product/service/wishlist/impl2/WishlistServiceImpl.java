@@ -1,11 +1,12 @@
 package org.abc.product.service.wishlist.impl2;
 
+import org.abc.product.ProductCategory;
 import org.abc.product.dao.wishlist.WishlistDAO;
 import org.abc.product.dao.wishlist.impl.WishlistDAOImpl;
-import org.abc.authentication.model.User;
 import org.abc.product.model.wishlist.Wishlist;
-import org.abc.product.model.product.Product;
 import org.abc.product.service.wishlist.WishlistService;
+
+import java.util.Objects;
 
 /**
  * <p>
@@ -35,7 +36,7 @@ public class WishlistServiceImpl implements WishlistService {
      * @return returns the single instance of WishlistServiceImpl Class.
      */
     public static WishlistService getInstance() {
-        return wishlistService == null ? wishlistService = new WishlistServiceImpl() : wishlistService;
+        return Objects.isNull(wishlistService) ? wishlistService = new WishlistServiceImpl() : wishlistService;
     }
 
     /**
@@ -43,13 +44,14 @@ public class WishlistServiceImpl implements WishlistService {
      * Adds the specific product to the wishlist
      * </p>
      *
-     * @param user Refers the current {@link User}
-     * @param product Refers {@link Product} to be added to the wishlist.
-     * @return true if the product is added.
+     * @param productId Refers the id of the product to be added to the wishlist.
+     * @param userId Refers the user id.
+     * @param productCategory Refers the product category.
+     * @return true if product added to the cart
      */
     @Override
-    public boolean addItem(final Product product, final User user) {
-        return WISHLIST_DAO.addItem(product, user);
+    public boolean addItem(final int productId, final int userId, final ProductCategory productCategory) {
+        return WISHLIST_DAO.addItem(productId, userId);
     }
 
     /**
@@ -57,12 +59,12 @@ public class WishlistServiceImpl implements WishlistService {
      * Removes the specific product from the wishlist
      * </p>
      *
-     * @param user Refers the current {@link User}
-     * @param product Refers {@link Product} the product to be removed.
+     * @param userId Refers the user id.
+     * @param productId Refers the id of the product to be removed from the wishlist.
      */
     @Override
-    public void removeItem(final Product product, final User user) {
-         WISHLIST_DAO.removeItem(product, user);
+    public void removeItem(final int productId, final int userId) {
+         WISHLIST_DAO.removeItem(productId, userId);
     }
 
     /**
@@ -70,11 +72,11 @@ public class WishlistServiceImpl implements WishlistService {
      * Gets the wishlist of the current user and returns it.
      * </p>
      *
-     * @param user Refers the current {@link User}.
+     * @param userId Refers the id of the user.
      * @return the {@link Wishlist} of the user.
      */
     @Override
-    public Wishlist getWishlist(final User user) {
-        return WISHLIST_DAO.getWishlist(user);
+    public Wishlist getWishlist(final int userId) {
+        return WISHLIST_DAO.getWishlist(userId);
     }
 }

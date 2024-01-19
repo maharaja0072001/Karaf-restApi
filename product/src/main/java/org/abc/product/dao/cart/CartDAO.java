@@ -1,8 +1,6 @@
 package org.abc.product.dao.cart;
 
-import org.abc.authentication.model.User;
 import org.abc.product.model.cart.Cart;
-import org.abc.product.model.product.Product;
 
 /**
  * <p>
@@ -19,29 +17,29 @@ public interface CartDAO {
      * Gets the cart of the current user and returns it.
      * </p>
      *
-     * @param user Refers the current {@link User}
+     * @param userId Refers the user id.
      * @return {@link Cart} of the user.
      */
-    Cart getCart(final User user);
+    Cart getCart(final int userId);
 
     /**
      * <p>
      * Adds the specific product to the cart.
      * </p>
      *
-     * @param user Refers the current {@link User}
-     * @param product Refers the {@link Product} to be added to the cart.
+     * @param userId Refers the user id.
+     * @param productId Refers the id of the product to be added to the cart.
      * @return true if the product is added.
      */
-    boolean addItem(final Product product, final User user);
+    boolean addItem(final int productId, final int userId);
 
     /**
      * <p>
      * Removes the specific product from the cart.
      * </p>
      *
-     * @param user Refers the current {@link User}
-     * @param product Refers the {@link Product} to be removed from the cart.
+     * @param userId Refers the user id.
+     * @param productId Refers the id of the product to be removed from the cart.
      */
-    void removeItem(final Product product, final User user);
+    void removeItem(final int productId, final int userId);
 }

@@ -1,5 +1,9 @@
 package org.abc.product.model.order;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+
 import org.abc.product.OrderStatus;
 import org.abc.product.PaymentMode;
 
@@ -11,6 +15,7 @@ import org.abc.product.PaymentMode;
  * @author Maharaja S
  * @version 1.0
  */
+@JsonDeserialize(builder = Order.OrderBuilder.class)
 public class Order {
 
     private final int id;
@@ -63,10 +68,6 @@ public class Order {
         return paymentMode;
     }
 
-    public String getProductName() {
-        return productName;
-    }
-
     public OrderStatus getOrderStatus() {
         return orderStatus;
     }
@@ -93,49 +94,61 @@ public class Order {
         private String productName;
         private OrderStatus orderStatus;
 
-        public OrderBuilder(final int userId, final int productId, final PaymentMode paymentMode) {
+        @JsonCreator
+        public OrderBuilder(@JsonProperty("userId")final int userId,
+                            @JsonProperty("productId")final int productId,
+                            @JsonProperty("paymentMode")final PaymentMode paymentMode) {
            this.userId = userId;
            this.productId = productId;
            this.paymentMode = paymentMode;
         }
 
+        /**
+         * Utilizes the builder pattern to construct the instance of {@link Order}.
+         */
+        @JsonProperty("address")
         public OrderBuilder setAddress(final String address) {
             this.address = address;
 
             return this;
         }
 
+        @JsonProperty("id")
         public OrderBuilder setId(final int id) {
             this.id = id;
 
             return this;
         }
 
+        @JsonProperty("totalAmount")
         public OrderBuilder setTotalAmount(final float totalAmount) {
             this.totalAmount = totalAmount;
 
             return this;
         }
 
+        @JsonProperty("quantity")
         public OrderBuilder setQuantity(final int quantity) {
             this.quantity = quantity;
 
             return this;
         }
 
+        @JsonProperty("productName")
         public OrderBuilder setProductName(final String productName) {
             this.productName = productName;
 
             return this;
         }
 
+        @JsonProperty("orderStatus")
         public OrderBuilder setOrderStatus(final OrderStatus orderStatus) {
             this.orderStatus = orderStatus;
 
             return this;
         }
 
-        public Order buildOrder() {
+        public Order build() {
             return new Order(this) ;
         }
     }

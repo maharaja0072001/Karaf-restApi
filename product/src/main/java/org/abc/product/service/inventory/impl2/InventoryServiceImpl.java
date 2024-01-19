@@ -7,6 +7,7 @@ import org.abc.product.model.product.Product;
 import org.abc.product.service.inventory.InventoryService;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * <p>
@@ -36,7 +37,7 @@ public class InventoryServiceImpl implements InventoryService {
      * @return the single instance of InventoryController class.
      */
     public static InventoryService getInstance() {
-        return inventoryService == null ? inventoryService = new InventoryServiceImpl() : inventoryService;
+        return Objects.isNull(inventoryService) ? inventoryService = new InventoryServiceImpl() : inventoryService;
     }
 
     /**
@@ -56,11 +57,12 @@ public class InventoryServiceImpl implements InventoryService {
      * Removes the given item from the inventory.
      * </p>
      *
-     * @param product Refers the {@link Product} to be removed.
+     * @param productId Refers the id of the {@link Product} to be removed.
+     * @param productCategory Refers the {@link ProductCategory}
      */
     @Override
-    public void removeItem(final Product product) {
-        INVENTORY_DAO.removeItem(product);
+    public void removeItem(final int productId, final ProductCategory productCategory) {
+        INVENTORY_DAO.removeItem(productId);
     }
 
     /**
@@ -71,7 +73,7 @@ public class InventoryServiceImpl implements InventoryService {
      * @return all the {@link Product} from the inventory.
      */
     @Override
-    public List<Product> getItemsByCategory(final ProductCategory productCategory) {
+    public List<? extends Product> getItemsByCategory(final ProductCategory productCategory) {
         return INVENTORY_DAO.getItemsByCategory(productCategory);
     }
 }

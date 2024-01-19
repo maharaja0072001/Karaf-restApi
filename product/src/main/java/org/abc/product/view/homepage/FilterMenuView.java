@@ -10,7 +10,6 @@ import org.abc.product.view.homepage.filter.impl.RateFilter;
 import org.abc.product.view.wishlist.WishlistView;
 import org.abc.product.view.cart.CartView;
 import org.abc.product.view.common_view.View;
-import org.abc.product.view.homepage.HomepageView;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
@@ -187,16 +186,12 @@ public class FilterMenuView extends View {
         }
 
         switch (choice) {
-            case 1:
-                CartView.getInstance().addItem(product, user);
-                break;
-            case 2:
-                WishlistView.getInstance().addItem(product, user);
-                break;
-            default:
+            case 1 -> CartView.getInstance().addItem(product, user);
+            case 2 -> WishlistView.getInstance().addItem(product, user);
+            default -> {
                 LOGGER.warn("Invalid choice");
                 addItemToCartOrWishlist(product, user, products);
-                break;
+            }
         }
     }
 

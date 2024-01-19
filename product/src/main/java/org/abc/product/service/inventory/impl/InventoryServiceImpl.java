@@ -1,11 +1,15 @@
 package org.abc.product.service.inventory.impl;
 
+import org.abc.product.model.inventory.Inventory;
+import org.abc.product.model.product.Clothes;
+import org.abc.product.model.product.Laptop;
+import org.abc.product.model.product.Mobile;
 import org.abc.product.model.product.Product;
 import org.abc.product.service.inventory.InventoryService;
 import org.abc.product.ProductCategory;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * <p>
@@ -18,9 +22,9 @@ import java.util.List;
 public class InventoryServiceImpl implements InventoryService {
 
     private static InventoryService inventoryService;
-    private  final List<Product> MOBILE_INVENTORY = new ArrayList<>();
-    private  final List<Product> LAPTOP_INVENTORY = new ArrayList<>();
-    private  final List<Product> CLOTHES_INVENTORY = new ArrayList<>();
+    private  final Inventory<Mobile> MOBILE_INVENTORY = new Inventory<>();
+    private  final Inventory<Laptop> LAPTOP_INVENTORY = new Inventory<>();
+    private  final Inventory<Clothes> CLOTHES_INVENTORY = new Inventory<>();
 
     /**
      * <p>
@@ -37,7 +41,7 @@ public class InventoryServiceImpl implements InventoryService {
      * @return the single instance of InventoryController class.
      */
     public static InventoryService getInstance() {
-        return inventoryService == null ? inventoryService = new InventoryServiceImpl() : inventoryService;
+        return Objects.isNull(inventoryService) ? inventoryService = new InventoryServiceImpl() : inventoryService;
     }
 
     /**
@@ -51,15 +55,9 @@ public class InventoryServiceImpl implements InventoryService {
     public void addItem(final List<Product> products) {
         for (final Product product : products) {
             switch (product.getProductCategory()) {
-                case MOBILE:
-                    MOBILE_INVENTORY.add(product);
-                    break;
-                case LAPTOP:
-                    LAPTOP_INVENTORY.add(product);
-                    break;
-                case CLOTHES:
-                    CLOTHES_INVENTORY.add(product);
-                    break;
+                case MOBILE -> MOBILE_INVENTORY.add((Mobile) product);
+                case LAPTOP -> LAPTOP_INVENTORY.add((Laptop) product);
+                case CLOTHES -> CLOTHES_INVENTORY.add((Clothes) product);
             }
         }
     }
@@ -69,20 +67,15 @@ public class InventoryServiceImpl implements InventoryService {
      * Removes the given item from the inventory.
      * </p>
      *
-     * @param product Refers the {@link Product} to be removed.
+     * @param productId Refers the id of the {@link Product} to be removed.
+     * @param productCategory Refers the {@link ProductCategory}
      */
     @Override
-    public void removeItem(final Product product) {
-        switch (product.getProductCategory()) {
-            case MOBILE:
-                MOBILE_INVENTORY.remove(product);
-                break;
-            case LAPTOP:
-                LAPTOP_INVENTORY.remove(product);
-                break;
-            case CLOTHES:
-                CLOTHES_INVENTORY.remove(product);
-                break;
+    public void removeItem(final int productId, final ProductCategory productCategory) {
+        switch (productCategory) {
+            case MOBILE -> MOBILE_INVENTORY.remove(productId);
+            case LAPTOP -> LAPTOP_INVENTORY.remove(productId);
+            case CLOTHES -> CLOTHES_INVENTORY.remove(productId);
         }
     }
 
@@ -94,16 +87,12 @@ public class InventoryServiceImpl implements InventoryService {
      * @return all the {@link Product} from the inventory.
      */
     @Override
-    public List<Product> getItemsByCategory(final ProductCategory productCategory) {
-        switch (productCategory) {
-            case MOBILE:
-                return MOBILE_INVENTORY;
-            case LAPTOP:
-                return LAPTOP_INVENTORY;
-            case CLOTHES:
-                return CLOTHES_INVENTORY;
-        }
+    public List<? extends Product> getItemsByCategory(final ProductCategory productCategory) {
+        return switch (productCategory) {
+            case MOBILE -> MOBILE_INVENTORY.get();
+            case LAPTOP -> LAPTOP_INVENTORY.get();
+            case CLOTHES -> CLOTHES_INVENTORY.get();
+        };
 
-        return null;
     }
 }

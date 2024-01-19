@@ -2,6 +2,8 @@ package org.abc.product;
 
 import org.abc.product.exceptions.ConstantNotFoundException;
 
+import java.util.EnumSet;
+
 /**
  * <p>
  * Provides the payment modes.
@@ -47,11 +49,10 @@ public enum PaymentMode {
      * @return the enum value.
      */
     public static PaymentMode valueOf(int id) {
-        for (final PaymentMode paymentMode : values()) {
-            if (paymentMode.id == id) {
-                return paymentMode;
-            }
-        }
-        throw new ConstantNotFoundException(String.format("Constant not found for the id: %d", id));
+        return EnumSet.allOf(PaymentMode.class)
+                .stream()
+                .filter(paymentMode -> paymentMode.id == id)
+                .findFirst()
+                .orElseThrow(() -> new ConstantNotFoundException(String.format("Constant not found for the id: %d", id)));
     }
 }

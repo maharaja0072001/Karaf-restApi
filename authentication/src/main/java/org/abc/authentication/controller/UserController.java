@@ -4,8 +4,17 @@ import org.abc.authentication.model.User;
 import org.abc.authentication.service.UserService;
 import org.abc.authentication.service.impl2.UserServiceImpl;
 
-import javax.ws.rs.*;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.GET;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.FormParam;
+import javax.ws.rs.PUT;
 import javax.ws.rs.core.MediaType;
+import java.util.Objects;
 
 /**
  * <p>
@@ -36,7 +45,7 @@ public class UserController {
      * @return the single instance of UserController class.
      */
     public static UserController getInstance() {
-        return userController == null ? userController = new UserController() : userController;
+        return Objects.isNull(userController) ? userController = new UserController() : userController;
     }
 
     /**
@@ -50,6 +59,7 @@ public class UserController {
 
     @Path("/add")
     @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
     @POST
     public boolean createUser(final User user) {
         return USER_SERVICE.createUser(user);
@@ -64,10 +74,11 @@ public class UserController {
      * @param password Refers the password of the user.
      * @return {@link User} if the credentials are correct and the user exists or null otherwise.
      */
-    @Path("/")
-    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/getUser")
+    @Produces(MediaType.APPLICATION_JSON)
     @GET
-    public User getUser(@QueryParam("username")final String emailIdOrMobileNumber, @QueryParam("password")final String password) {
+    public User getUser(@FormParam("username")final String emailIdOrMobileNumber,
+                        @FormParam("password")final String password) {
         return USER_SERVICE.getUser(emailIdOrMobileNumber, password);
     }
 
@@ -83,5 +94,20 @@ public class UserController {
     @PUT
     public void updateDetails(final User user) {
         USER_SERVICE.updateDetails(user);
+    }
+
+    /**
+     * <p>
+     * Gets the user by id.
+     * </p>
+     *
+     * @param userId Refers the id of the user.
+     * @return {@link User}.
+     */
+    @Path("/getById/{userId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @GET
+    public User getUserById(@PathParam("userId")final int userId) {
+        return USER_SERVICE.getUserById(userId);
     }
 }

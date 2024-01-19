@@ -1,4 +1,4 @@
-package src.main.java.org.abc.authentication.service;
+package org.abc.authentication.service;
 
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 
@@ -11,6 +11,8 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
 
 import org.abc.authentication.controller.UserController;
+
+import java.util.Objects;
 
 @Component
 public class RestService {
@@ -30,7 +32,7 @@ public class RestService {
 
     @Deactivate
     public void deactivate() throws Exception {
-        if (server != null) {
+        if (Objects.nonNull(server)) {
             server.destroy();
         }
     }

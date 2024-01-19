@@ -1,14 +1,15 @@
 package org.abc.product.service.order.impl;
 
 import org.abc.product.OrderStatus;
-import org.abc.authentication.model.User;
 import org.abc.product.model.order.Order;
 import org.abc.product.service.order.OrderService;
+import org.abc.authentication.service.impl2.UserServiceImpl;
 
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * <p>
@@ -38,7 +39,7 @@ public class OrderServiceImpl implements OrderService {
      * @return returns the single instance of OrderServiceImpl Class.
      */
     public static OrderService getInstance() {
-        return orderService == null ? orderService = new OrderServiceImpl() : orderService;
+        return Objects.isNull(orderService) ? orderService = new OrderServiceImpl() : orderService;
     }
 
     /**
@@ -51,16 +52,7 @@ public class OrderServiceImpl implements OrderService {
      */
     @Override
     public void addOrder(final int userId, final Order order) {
-        if (ORDERS.containsKey(userId)) {
-            final List<Order> existingOrders = ORDERS.get(userId);
-
-            existingOrders.add(order);
-        } else {
-            final List<Order> newOrders = new ArrayList<>();
-
-            ORDERS.put(userId, newOrders);
-            newOrders.add(order);
-        }
+        ORDERS.computeIfAbsent(userId, key -> new ArrayList<>()).add(order);
     }
 
     /**
@@ -93,12 +85,12 @@ public class OrderServiceImpl implements OrderService {
      * Adds the address of the user.
      * </p>
      *
-     * @param user Refers the current {@link User} .
+     * @param userId Refers the is of the user.
      * @param address Refers the address to be added.
      */
     @Override
-    public void addAddress(final User user, final String address) {
-        user.addAddress(address);
+    public void addAddress(final int userId, final String address) {
+       UserServiceImpl.getInstance().getUserById(userId).addAddress(address);
     }
 
     /**
@@ -106,11 +98,11 @@ public class OrderServiceImpl implements OrderService {
      * Gets all the addresses of the user.
      * </p>
      *
-     * @param user Refers the current {@link User}.
+     * @param userId Refers the user id..
      * @return the list of all the address.
      */
     @Override
-    public List<String> getAllAddresses(final User user) {
-        return user.getAddresses();
+    public List<String> getAllAddresses(final int userId) {
+        return UserServiceImpl.getInstance().getUserById(userId).getAddresses();
     }
 }

@@ -1,7 +1,9 @@
 package org.abc.product.model.product;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import org.abc.product.ProductCategory;
-import org.abc.product.model.product.Product;
 
 import java.util.Objects;
 
@@ -17,7 +19,11 @@ public class Mobile extends Product {
 
     private final String model;
 
-    public Mobile(final String brandName, final String model, final float price, final int quantity) {
+    @JsonCreator
+    public Mobile(@JsonProperty("brandName") final String brandName,
+                  @JsonProperty("model") final String model,
+                  @JsonProperty("float") final float price,
+                  @JsonProperty("quantity") final int quantity) {
         super(ProductCategory.MOBILE, price, brandName, quantity);
         this.model = model;
     }
@@ -26,17 +32,9 @@ public class Mobile extends Product {
         return model;
     }
 
+    @Override
     public String toString() {
         return String.format("%s : %s - Rs : %.2f", super.getBrandName(), model, super.getPrice());
-    }
-
-    @Override
-    public boolean equals(final Object object) {
-        if (null == object || getClass() != object.getClass()) {
-            return false;
-        }
-
-        return this.hashCode() == object.hashCode();
     }
 
     @Override

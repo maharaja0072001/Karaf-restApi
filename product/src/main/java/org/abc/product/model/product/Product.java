@@ -1,6 +1,13 @@
 package org.abc.product.model.product;
 
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
+import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
+
 import org.abc.product.ProductCategory;
+
+import java.util.Objects;
 
 /**
  * <p>
@@ -10,6 +17,14 @@ import org.abc.product.ProductCategory;
  * @author Maharaja S
  * @version 1.0
  */
+
+@JsonTypeInfo(use = Id.NAME,
+        property = "type")
+@JsonSubTypes({
+        @Type(value = Mobile.class),
+        @Type(value = Laptop.class),
+        @Type(value = Clothes.class),
+})
 public abstract class Product {
 
     private int id;
@@ -18,7 +33,8 @@ public abstract class Product {
     private final String brandName;
     private int quantity;
 
-    public Product(final ProductCategory productCategory, final float price, final String brandName, final int quantity) {
+    public Product(final ProductCategory productCategory, final float price,
+                   final String brandName, final int quantity) {
         this.productCategory = productCategory;
         this.price = price;
         this.brandName = brandName;
@@ -55,5 +71,10 @@ public abstract class Product {
 
     public void setQuantity(final int quantity) {
         this.quantity = quantity;
+    }
+
+    @Override
+    public boolean equals(final Object object) {
+        return !Objects.isNull(object) && getClass() == object.getClass() && this.hashCode() == object.hashCode();
     }
 }

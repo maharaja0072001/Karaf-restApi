@@ -1,13 +1,19 @@
 package org.abc.product.controller.wishlist;
 
-import org.abc.authentication.model.User;
+import org.abc.product.ProductCategory;
 import org.abc.product.model.wishlist.Wishlist;
-import org.abc.product.model.product.Product;
 import org.abc.product.service.wishlist.impl2.WishlistServiceImpl;
 import org.abc.product.service.wishlist.WishlistService;
 
-import javax.ws.rs.*;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.GET;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.core.MediaType;
+
+import java.util.Objects;
 
 /**
  * <p>
@@ -38,23 +44,24 @@ public class WishlistController {
      * @return returns the single instance of WishlistController Class.
      */
     public static WishlistController getInstance() {
-        return wishlistController == null ? wishlistController = new WishlistController() : wishlistController;
+        return Objects.isNull(wishlistController) ? wishlistController = new WishlistController() : wishlistController;
     }
 
     /**
      * <p>
      * Adds the product to the wishlist of the specified user.
      * </p>
-     *
-     * @param product Refers the product to be added
-     * @param user Refers the user
-     * @return the wishlist of the user.
+     * @param productId Refers the id of the product to be added
+     * @param userId Refers the user id.
+     * @param productCategory Refers the product category.
+     * @return the if product added to the wishlist.
      */
-    @Path("/add")
-    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/add/{userId}/{category}/{productId}")
+    @Produces(MediaType.APPLICATION_JSON)
     @POST
-    public boolean addItem(final Product product, final User user) {
-        return WISHLIST_SERVICE.addItem(product, user);
+    public boolean addItem(@PathParam("productId")final int productId, @PathParam("userId")final int userId,
+                           @PathParam("category") final ProductCategory productCategory) {
+        return WISHLIST_SERVICE.addItem(productId, userId, productCategory);
     }
 
     /**
@@ -62,14 +69,13 @@ public class WishlistController {
      * Removes the product from the wishlist of the specified user.
      * </p>
      *
-     * @param product Refers the product to be removed.
-     * @param user Refers the user
+     * @param productId Refers the id of the product to be removed.
+     * @param userId Refers the user id.
      */
-    @Path("/remove")
-    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/remove/{userId}/{productId}")
     @DELETE
-    public void removeItem(final Product product, final User user) {
-        WISHLIST_SERVICE.removeItem(product, user);
+    public void removeItem(@PathParam("productId")final int productId, @PathParam("userId")final int userId) {
+        WISHLIST_SERVICE.removeItem(productId, userId);
     }
 
     /**
@@ -77,13 +83,13 @@ public class WishlistController {
      * Gets the wishlist of the specified user id and returns it.
      * </p>
      *
-     * @param user Refers the user who owns the cart.
-     * @return the wishlist of the user.
+     * @param userId Refers the user id who owns the cart.
+     * @return the {@link Wishlist} of the user.
      */
-    @Path("/get")
-    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/get/{userId}")
+    @Produces(MediaType.APPLICATION_JSON)
     @GET
-    public Wishlist getWishlist(final User user) {
-        return WISHLIST_SERVICE.getWishlist(user);
+    public Wishlist getWishlist(@PathParam("userId")final int userId) {
+        return WISHLIST_SERVICE.getWishlist(userId);
     }
 }

@@ -1,8 +1,7 @@
 package org.abc.product.service.wishlist;
 
-import org.abc.authentication.model.User;
+import org.abc.product.ProductCategory;
 import org.abc.product.model.wishlist.Wishlist;
-import org.abc.product.model.product.Product;
 
 /**
  * <p>
@@ -16,32 +15,33 @@ public interface WishlistService {
 
     /**
      * <p>
-     * Adds the specific product to the wishlist
+     * Adds the specific product to the wishlist.
      * </p>
      *
-     * @param user Refers the current {@link User}
-     * @param product Refers {@link Product} to be added to the wishlist.
+     * @param userId Refers the user id.
+     * @param productId Refers the id of the product to be added to the wishlist.
+     * @param productCategory Refers the product category.
      * @return true if the product is added.
      */
-    boolean addItem(final Product product, final User user);
+    boolean addItem(final int productId, final int userId, final ProductCategory productCategory);
 
     /**
      * <p>
-     * Removes the specific product from the wishlist
+     * Removes the specific product from the wishlist.
      * </p>
      *
-     * @param user Refers the current {@link User}
-     * @param product Refers {@link Product} the product to be removed.
+     * @param userId Refers the user id.
+     * @param productId Refers the id of the product to be removed from the wishlist.
      */
-    void removeItem(final Product product, final User user);
+    void removeItem(final int productId, final int userId);
 
     /**
      * <p>
      * Gets the wishlist of the current user and returns it.
      * </p>
      *
-     * @param user Refers the current {@link User}
+     * @param userId Refers the id of the user.
      * @return the {@link Wishlist} of the user.
      */
-    Wishlist getWishlist(final User user);
+    Wishlist getWishlist(final int userId);
 }

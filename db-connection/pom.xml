@@ -51,7 +51,7 @@
                             org.abc*;version=${project.version}
                         </Export-Package>
                         <Import-Package>
-                           *
+                            *
                         </Import-Package>
                     </instructions>
                 </configuration>

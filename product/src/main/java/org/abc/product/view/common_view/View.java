@@ -57,7 +57,7 @@ public abstract class View {
             if (0 == products.get(i).getQuantity()) {
                 quantityStatus = "(Out of Stock)";
             }
-            LOGGER.info(String.format("[%d : %s%s]", i+1, products.get(i), quantityStatus));
+            LOGGER.info(String.format("[%d : %s%s]", i + 1, products.get(i), quantityStatus));
         }
     }
 }

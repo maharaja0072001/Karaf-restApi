@@ -5,11 +5,9 @@ import org.abc.dbconnection.connection.DBConnection;
 import org.abc.product.exceptions.ItemRemovalFailedException;
 import org.abc.product.exceptions.ItemNotFoundException;
 import org.abc.product.model.cart.Cart;
-import org.abc.authentication.model.User;
 import org.abc.product.model.product.Clothes;
 import org.abc.product.model.product.Laptop;
 import org.abc.product.model.product.Mobile;
-import org.abc.product.model.product.Product;
 import org.abc.product.ProductCategory;
 
 import java.sql.PreparedStatement;
@@ -52,18 +50,17 @@ public class CartDAOImpl implements CartDAO {
      * Adds the product to the cart in the database.
      * </p>
      *
-     * @param product Refers the {@link Product} to be added.
-     * @param user Refers the current {@link User}.
+     * @param productId Refers the id of the product to be added.
+     * @param userId Refers the user id.
      * @return true is the product is added to the cart.
      */
     @Override
-    public boolean addItem(final Product product, final User user) {
-        try (final PreparedStatement preparedStatement = DBConnection.getConnection().prepareStatement("insert into cart (user_id , product_id) values(?,?)")) {
-            preparedStatement.setInt(1, user.getId());
-            preparedStatement.setInt(2, product.getId());
+    public boolean addItem(final int productId, final int userId) {
+        try (final PreparedStatement preparedStatement = DBConnection.getConnection()
+                .prepareStatement("insert into cart (user_id , product_id) values(?,?)")) {
+            preparedStatement.setInt(1, userId);
+            preparedStatement.setInt(2, productId);
             final int updatedRows = preparedStatement.executeUpdate();
-
-            DBConnection.getConnection().commit();
 
             return  updatedRows > 0;
         } catch (final SQLException exception) {
@@ -76,16 +73,16 @@ public class CartDAOImpl implements CartDAO {
      * Removes the product from the cart in the database.
      * </p>
      *
-     * @param product Refers the {@link Product} to be removed from the cart.
-     * @param user Refers the current {@link User}.
+     * @param productId Refers the id of the product to be removed from the cart.
+     * @param userId Refers the user id.
      */
     @Override
-    public void removeItem(final Product product, final User user) {
-        try (final PreparedStatement preparedStatement = DBConnection.getConnection().prepareStatement("delete from cart where user_id =? and product_id =?")) {
-            preparedStatement.setInt(1, user.getId());
-            preparedStatement.setInt(2, product.getId());
+    public void removeItem(final int productId, final int userId) {
+        try (final PreparedStatement preparedStatement = DBConnection.getConnection()
+                .prepareStatement("delete from cart where user_id =? and product_id =?")) {
+            preparedStatement.setInt(1, userId);
+            preparedStatement.setInt(2, productId);
             preparedStatement.executeUpdate();
-            DBConnection.getConnection().commit();
 
         } catch (final SQLException exception) {
             throw new ItemRemovalFailedException(exception.getMessage());
@@ -97,15 +94,19 @@ public class CartDAOImpl implements CartDAO {
      * Gets the cart to the user from the database.
      * </p>
      *
-     * @param user Refers the current {@link User}.
+     * @param userId Refers the user id.
      * @return {@link Cart} of the user.
      */
     @Override
-    public Cart getCart(final User user) {
+    public Cart getCart(final int userId) {
         final Cart cart = new Cart();
 
-        try (final PreparedStatement preparedStatement = DBConnection.getConnection().prepareStatement("select cart.product_id, p.product_category_id, e.brand,e.model, p.price,c.clothes_type,c.size,c.gender, c.brand, p.quantity from cart join product p on cart.product_id=p.id  left join electronics_inventory e on cart.product_id = e.product_id left join clothes_inventory c on p.id=c.product_id where cart.user_id = ?")) {
-            preparedStatement.setInt(1, user.getId());
+        try (final PreparedStatement preparedStatement = DBConnection.getConnection()
+                .prepareStatement(String.join(" ", "select cart.product_id, p.product_category_id,",
+                "e.brand,e.model, p.price,c.clothes_type,c.size,c.gender, c.brand, p.quantity from cart join product p",
+                "on cart.product_id=p.id left join electronics_inventory e on cart.product_id = e.product_id",
+                "left join clothes_inventory c on p.id=c.product_id where cart.user_id = ?"))) {
+            preparedStatement.setInt(1, userId);
             final ResultSet resultSet = preparedStatement.executeQuery();
 
             while (resultSet.next()) {

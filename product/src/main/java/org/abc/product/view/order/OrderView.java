@@ -49,7 +49,7 @@ public class OrderView extends View {
      * @return the single instance of OrderView class.
      */
     public static OrderView getInstance() {
-        return orderView == null ? orderView = new OrderView() : orderView;
+        return Objects.isNull(orderView) ? orderView = new OrderView() : orderView;
     }
 
     /**
@@ -62,15 +62,14 @@ public class OrderView extends View {
     public void viewAndCancelOrder(final User user) {
         final List<Order> orders = ORDER_CONTROLLER.getOrders(user.getId());
 
-        if (null == orders || orders.isEmpty()) {
+        if (Objects.isNull(orders) || orders.isEmpty()) {
             LOGGER.info(String.format("User id :%d - No orders found", user.getId()));
             HOME_PAGE_VIEW.showHomePage(user);
         } else {
             for (int i = 0; i < orders.size(); i++) {
-                LOGGER.info(String.format("%d :[%s]\n", i+1, orders.get(i)));
+                LOGGER.info(String.format("%d :[%s]\n", i + 1, orders.get(i)));
             }
             LOGGER.info("Enter the order no to cancel the order.[Press '$' to go back]");
-
             final int index = getChoice();
 
             toGoBack(index, user);
@@ -79,7 +78,8 @@ public class OrderView extends View {
                 final Order order = orders.get(index - 1) ;
 
                 ORDER_CONTROLLER.cancelOrder(order);
-                LOGGER.info(String.format("User id :%d Order id :%d - Your order has been cancelled", user.getId(), order.getId()));
+                LOGGER.info(String.format("User id :%d Order id :%d - Your order has been cancelled",
+                        user.getId(), order.getId()));
 
             } else {
                 LOGGER.warn("Enter a valid number");
@@ -98,11 +98,12 @@ public class OrderView extends View {
      */
     public void placeOrder(final Product product, final User user){
         final int productQuantity = getQuantity(user, product);
-        final String address = getAddress(ORDER_CONTROLLER.getAllAddresses(user), user);
+        final String address = getAddress(ORDER_CONTROLLER.getAllAddresses(user.getId()), user);
         final PaymentMode paymentMode = getPaymentMode(user);
 
-        ORDER_CONTROLLER.addOrder(user.getId(), new Order.OrderBuilder(user.getId(), product.getId(),
-                paymentMode).setAddress(address).setQuantity(productQuantity).setTotalAmount(productQuantity * product.getPrice()).setProductName(product.toString()).setOrderStatus(OrderStatus.PLACED).buildOrder());
+        ORDER_CONTROLLER.addOrder(user.getId(), new Order.OrderBuilder(user.getId(), product.getId(), paymentMode)
+                .setAddress(address).setQuantity(productQuantity).setTotalAmount(productQuantity * product.getPrice())
+                .setProductName(product.toString()).setOrderStatus(OrderStatus.PLACED).build());
         product.setQuantity(product.getQuantity() - productQuantity);
         LOGGER.info(String.format("User Id :%d Product Id :%d - Order placed successfully", user.getId(), product.getId()));
     }
@@ -121,18 +122,21 @@ public class OrderView extends View {
         toGoBack(choice, user);
 
         switch (choice) {
-            case 1:
+            case 1 -> {
                 return PaymentMode.CASH_ON_DELIVERY;
-            case 2:
+            }
+            case 2 -> {
                 return PaymentMode.CREDIT_OR_DEBIT_CARD;
-            case 3:
+            }
+            case 3 -> {
                 return PaymentMode.NET_BANKING;
-            case 4:
+            }
+            case 4 -> {
                 return PaymentMode.UPI;
-            default:
-                LOGGER.warn("Enter a valid choice");
-                break;
+            }
+            default -> LOGGER.warn("Enter a valid choice");
         }
+
         return getPaymentMode(user);
     }
 
@@ -154,7 +158,8 @@ public class OrderView extends View {
         if (Validator.getInstance().isPositiveNumber(quantity) && Integer.parseInt(quantity) <= product.getQuantity()) {
             return Integer.parseInt(quantity);
         } else {
-            LOGGER.warn(String.format("User id :%d Product id:%d - Enter a valid quantity. Available quantity :%d ", product.getId(), user.getId(), product.getQuantity()));
+            LOGGER.warn(String.format("User id :%d Product id:%d - Enter a valid quantity. Available quantity :%d",
+                    product.getId(), user.getId(), product.getQuantity()));
 
             return getQuantity(user, product);
         }
@@ -175,7 +180,7 @@ public class OrderView extends View {
             final String newAddress = SCANNER.nextLine().trim();
 
             toGoBack(newAddress, user);
-            ORDER_CONTROLLER.addAddress(user, newAddress);
+            ORDER_CONTROLLER.addAddress(user.getId(), newAddress);
 
             return newAddress;
         }
@@ -186,23 +191,22 @@ public class OrderView extends View {
         toGoBack(choice, user);
 
         switch (choice) {
-            case 1:
+            case 1 -> {
                 LOGGER.info("Enter the index:");
                 final String index = SCANNER.nextLine().trim();
-
                 toGoBack(index, user);
 
-                return ORDER_CONTROLLER.getAllAddresses(user).get(Integer.parseInt(index));
-            case 2:
+                return ORDER_CONTROLLER.getAllAddresses(user.getId()).get(Integer.parseInt(index));
+            }
+            case 2 -> {
                 LOGGER.info("Enter a new address:");
                 final String newAddress = SCANNER.nextLine().trim();
-
                 toGoBack(newAddress, user);
-                ORDER_CONTROLLER.addAddress(user, newAddress);
+                ORDER_CONTROLLER.addAddress(user.getId(), newAddress);
 
                 return newAddress;
-            default :
-                LOGGER.warn("Enter a valid choice");
+            }
+            default -> LOGGER.warn("Enter a valid choice");
         }
 
         return getAddress(addresses, user);
@@ -217,7 +221,7 @@ public class OrderView extends View {
      */
     private void showAllAddress(final List<String> addresses) {
         for (int i = 0; i < addresses.size(); i++) {
-            LOGGER.info(String.format("%d :[%s]\n", i+1, addresses.get(i)));
+            LOGGER.info(String.format("%d :[%s]\n", i + 1, addresses.get(i)));
         }
     }
 

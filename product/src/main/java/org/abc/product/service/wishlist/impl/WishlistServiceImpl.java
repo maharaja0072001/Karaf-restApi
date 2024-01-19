@@ -1,12 +1,13 @@
 package org.abc.product.service.wishlist.impl;
 
-import org.abc.authentication.model.User;
+import org.abc.product.ProductCategory;
+import org.abc.product.controller.inventory.InventoryController;
 import org.abc.product.model.wishlist.Wishlist;
-import org.abc.product.model.product.Product;
 import org.abc.product.service.wishlist.WishlistService;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * <p>
@@ -36,7 +37,7 @@ public class WishlistServiceImpl implements WishlistService {
      * @return returns the single instance of WishlistServiceImpl Class.
      */
     public static WishlistService getInstance() {
-        return wishlistService == null ? wishlistService = new WishlistServiceImpl() : wishlistService;
+        return Objects.isNull(wishlistService) ? wishlistService = new WishlistServiceImpl() : wishlistService;
     }
 
     /**
@@ -44,18 +45,18 @@ public class WishlistServiceImpl implements WishlistService {
      * Adds the specific product to the wishlist
      * </p>
      *
-     * @param user Refers the current {@link User}
-     * @param product Refers {@link Product} to be added to the wishlist.
-     * @return true if the product is added.
+     * @param productId Refers the id of the product to be added to the wishlist.
+     * @param userId Refers the user id.
+     * @param productCategory Refers the category of product.
+     * @return true if the product is added or false otherwise.
      */
     @Override
-    public boolean addItem(final Product product, final User user) {
-        if (!WISHLISTS.containsKey(user.getId())) {
-            WISHLISTS.put(user.getId(), new Wishlist());
-        }
-        final Wishlist wishlist = WISHLISTS.get(user.getId());
+    public boolean addItem(final int productId, final int userId, final ProductCategory productCategory) {
+       WISHLISTS.computeIfAbsent(userId, key -> new Wishlist());
+        final Wishlist wishlist = WISHLISTS.get(userId);
 
-        return wishlist.addItem(product);
+        return InventoryController.getInstance().getItemsByCategory(productCategory).stream()
+                .filter(product -> productId == product.getId()).findFirst().map(wishlist::addItem).orElse(false);
     }
 
     /**
@@ -63,14 +64,14 @@ public class WishlistServiceImpl implements WishlistService {
      * Removes the specific product from the wishlist
      * </p>
      *
-     * @param user Refers the current {@link User}
-     * @param product Refers {@link Product} the product to be removed.
+     * @param userId Refers the user id.
+     * @param productId Refers the id of the product to be removed .
      */
     @Override
-    public void removeItem(final Product product, final User user) {
-        final Wishlist wishlist = WISHLISTS.get(user.getId());
+    public void removeItem(final int productId, final int userId) {
+        final Wishlist wishlist = WISHLISTS.get(userId);
 
-        wishlist.removeItem(product);
+        wishlist.getItems().removeIf(product -> productId == product.getId());
     }
 
     /**
@@ -78,11 +79,11 @@ public class WishlistServiceImpl implements WishlistService {
      * Gets the wishlist of the current user and returns it.
      * </p>
      *
-     * @param user Refers the current {@link User}.
+     * @param userId Refers the id of the user.
      * @return the {@link Wishlist} of the user.
      */
     @Override
-    public Wishlist getWishlist(final User user) {
-        return WISHLISTS.get(user.getId());
+    public Wishlist getWishlist(final int userId) {
+        return WISHLISTS.get(userId);
     }
 }

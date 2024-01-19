@@ -6,6 +6,8 @@ import org.abc.authentication.service.UserService;
 import org.abc.authentication.model.User;
 import org.abc.validation.Validator;
 
+import java.util.Objects;
+
 /**
  * <p>
  * Provides the implementation for the USerService.
@@ -34,7 +36,7 @@ public class UserServiceImpl implements UserService {
      * @return returns the single instance of UserServiceImpl Class.
      */
     public static UserService getInstance() {
-        return userService == null ? userService = new UserServiceImpl() : userService;
+        return Objects.isNull(userService) ? userService = new UserServiceImpl() : userService;
     }
 
     /**
@@ -76,5 +78,18 @@ public class UserServiceImpl implements UserService {
     @Override
     public void updateDetails(final User user) {
         USER_DAO.updateDetails(user);
+    }
+
+    /**
+     * <p>
+     * Gets the user by id.
+     * </p>
+     *
+     * @param userId Refers the id of the user.
+     * @return {@link User}.
+     */
+    @Override
+    public User getUserById(int userId) {
+        return USER_DAO.getUserById(userId);
     }
 }

@@ -73,11 +73,7 @@ public class User {
 
     @Override
     public boolean equals(final Object object) {
-        if (null == object || getClass() != object.getClass()) {
-            return false;
-        }
-
-        return this.hashCode() == object.hashCode();
+        return !Objects.isNull(object) && getClass() == object.getClass() && this.hashCode() == object.hashCode();
     }
 
     @Override

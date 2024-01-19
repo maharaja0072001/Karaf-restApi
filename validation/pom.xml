@@ -7,7 +7,6 @@
         <artifactId>com.flipkart</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
-
     <artifactId>validation</artifactId>
     <packaging>bundle</packaging>
     <name>validation Bundle</name>
@@ -21,7 +20,6 @@
     </properties>
 
     <build>
-
         <plugins>
             <plugin>
                 <groupId>org.apache.felix</groupId>

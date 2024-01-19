@@ -49,18 +49,18 @@ public interface OrderDAO {
      * Adds the address of the user.
      * </p>
      *
-     * @param user Refers the current {@link User} .
+     * @param userId Refers the id of the user.
      * @param address Refers the address to be added.
      */
-    void addAddress(final User user, final String address);
+    void addAddress(final int userId, final String address);
 
     /**
      * <p>
      * Gets all the addresses of the user.
      * </p>
      *
-     * @param user Refers the current {@link User}.
+     * @param userId Refers the id of the user.
      * @return the list of all the address.
      */
-    List<String> getAllAddresses(final User user);
+    List<String> getAllAddresses(final int userId);
 }

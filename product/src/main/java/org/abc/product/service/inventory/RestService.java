@@ -1,4 +1,4 @@
-package src.main.java.org.abc.product.service.inventory;
+package org.abc.product.service.inventory;
 
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 

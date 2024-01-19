@@ -34,4 +34,14 @@ public interface UserDAO {
      * @param user Refers the current {@link User}.
      */
     void updateDetails(final User user);
+
+    /**
+     * <p>
+     * Gets the user by id.
+     * </p>
+     *
+     * @param userId Refers the id of the user.
+     * @return {@link User}.
+     */
+    User getUserById(final int userId);
 }

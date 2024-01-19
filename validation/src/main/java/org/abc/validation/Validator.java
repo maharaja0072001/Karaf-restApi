@@ -1,5 +1,6 @@
 package org.abc.validation;
 
+import java.util.Objects;
 import java.util.regex.Pattern;
 
 /**
@@ -29,7 +30,7 @@ public class Validator {
      * @return the single instance of UserDataValidator class.
      */
     public static Validator getInstance() {
-        return validator == null ? validator = new Validator() : validator;
+        return Objects.isNull(validator) ? validator = new Validator() : validator;
     }
 
     /**
@@ -84,20 +85,14 @@ public class Validator {
         final String forChina = "^861[3-9][0-9]{9}$";
         final String forIndia = "^91[6789]\\d{9}$";
 
-        switch (choice) {
-            case 1:
-                return Pattern.matches(forAmerica, mobileNumber);
-            case 2:
-                return Pattern.matches(forAustralia, mobileNumber);
-            case 3:
-                return Pattern.matches(forChina, mobileNumber);
-            case 4:
-                return Pattern.matches(forGermany, mobileNumber);
-            case 5:
-                return Pattern.matches(forIndia, mobileNumber);
-        }
-
-        return false;
+        return switch (choice) {
+            case 1 -> Pattern.matches(forAmerica, mobileNumber);
+            case 2 -> Pattern.matches(forAustralia, mobileNumber);
+            case 3 -> Pattern.matches(forChina, mobileNumber);
+            case 4 -> Pattern.matches(forGermany, mobileNumber);
+            case 5 -> Pattern.matches(forIndia, mobileNumber);
+            default -> false;
+        };
     }
 
     /**

@@ -77,7 +77,7 @@ public class UserServiceImpl implements UserService {
             user = USERS.get(emailIdOrMobileNumber);
         }
 
-        return null != user && (user.getPassword().equals(password)) ? user : null;
+        return Objects.nonNull(user) && (user.getPassword().equals(password)) ? user : null;
     }
 
     /**
@@ -90,5 +90,18 @@ public class UserServiceImpl implements UserService {
     @Override
     public void updateDetails(final User user) {
         USERS.put(user.getMobileNumber(), user);
+    }
+
+    /**
+     * <p>
+     * Gets the user by id.
+     * </p>
+     *
+     * @param userId Refers the id of the user.
+     * @return {@link User}.
+     */
+    @Override
+    public User getUserById(final int userId) {
+        return USERS.values().stream().filter(user -> user.getId() == userId).findFirst().orElse(null);
     }
 }

@@ -5,9 +5,18 @@ import org.abc.product.model.product.Product;
 import org.abc.product.service.inventory.impl2.InventoryServiceImpl;
 import org.abc.product.service.inventory.InventoryService;
 
-import javax.ws.rs.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.GET;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+
 import java.util.List;
+import java.util.Objects;
 
 /**
  * <p>
@@ -38,7 +47,7 @@ public class InventoryController {
      * @return the single instance of InventoryController class.
      */
     public static InventoryController getInstance() {
-        return inventoryController == null ? inventoryController = new InventoryController() : inventoryController;
+        return Objects.isNull(inventoryController) ? inventoryController = new InventoryController() : inventoryController;
     }
 
     /**
@@ -60,13 +69,13 @@ public class InventoryController {
      * Removes the given item from the inventory.
      * </p>
      *
-     * @param item the item to be removed.
+     * @param productId Refers the id of the product to be removed.
      */
-    @Path("/remove")
-    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/remove/{category}/{id}")
     @DELETE
-    public void removeItemFromInventory(final Product item) {
-        INVENTORY.removeItem(item);
+    public void removeItemFromInventory(@PathParam("id") final int productId,
+                                        @PathParam("category")final ProductCategory productCategory) {
+        INVENTORY.removeItem(productId, productCategory);
     }
 
     /**
@@ -76,10 +85,10 @@ public class InventoryController {
      *
      * @return all the {@link Product} from the inventory.
      */
-    @Path("/get")
-    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/getByCategory")
+    @Produces(MediaType.APPLICATION_JSON)
     @GET
-    public List<Product> getItemsByCategory(final ProductCategory productCategory) {
-        return INVENTORY.getItemsByCategory(productCategory);
+    public List<Product> getItemsByCategory(@QueryParam("category") final ProductCategory productCategory) {
+        return (List<Product>) INVENTORY.getItemsByCategory(productCategory);
     }
 }

@@ -9,12 +9,12 @@ import org.abc.product.model.product.Product;
 import org.abc.product.view.cart.CartView;
 
 import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Properties;
 
 /**
@@ -28,7 +28,6 @@ import java.util.Properties;
 public class InventoryManager {
 
     private static InventoryManager inventoryManager;
-    private static final Logger LOGGER = LogManager.getLogger(CartView.class);
 
     /**
      * <p>
@@ -45,7 +44,7 @@ public class InventoryManager {
      * @return the single instance of InventoryManager class.
      */
     public static InventoryManager getInstance() {
-        return inventoryManager == null ? inventoryManager = new InventoryManager() : inventoryManager;
+        return Objects.isNull(inventoryManager) ? inventoryManager = new InventoryManager() : inventoryManager;
     }
 
     /**
@@ -56,9 +55,12 @@ public class InventoryManager {
     public void addAllItems() {
         final List<Product> allProducts = new ArrayList<>();
 
-        loadProducts(allProducts, String.join("",System.getenv("INVENTORY_PATH"), "/mobiles.properties"), ProductCategory.MOBILE);
-        loadProducts(allProducts, String.join("",System.getenv("INVENTORY_PATH"), "/laptops.properties"), ProductCategory.LAPTOP);
-        loadProducts(allProducts, String.join("",System.getenv("INVENTORY_PATH"), "/clothes.properties"), ProductCategory.CLOTHES);
+        loadProducts(allProducts, String.join("",System.getenv("INVENTORY_PATH"),
+                "/mobiles.properties"), ProductCategory.MOBILE);
+        loadProducts(allProducts, String.join("",System.getenv("INVENTORY_PATH"),
+                "/laptops.properties"), ProductCategory.LAPTOP);
+        loadProducts(allProducts, String.join("",System.getenv("INVENTORY_PATH"),
+                "/clothes.properties"), ProductCategory.CLOTHES);
         InventoryController.getInstance().addItemToInventory(allProducts);
     }
 
@@ -81,19 +83,13 @@ public class InventoryManager {
                 final String value = properties.getProperty((String) key);
 
                 switch (productCategory) {
-                    case MOBILE:
-                        allProducts.add(createMobile(value));
-                        break;
-                    case LAPTOP:
-                        allProducts.add(createLaptop(value));
-                        break;
-                    case CLOTHES:
-                        allProducts.add(createClothes(value));
-                        break;
+                    case MOBILE -> allProducts.add(createMobile(value));
+                    case LAPTOP -> allProducts.add(createLaptop(value));
+                    case CLOTHES -> allProducts.add(createClothes(value));
                 }
             }
         } catch (final IOException exception) {
-            LOGGER.error("Failed Loading properties file or File not found");
+            LogManager.getLogger(CartView.class).error("Failed Loading properties file or File not found");
             throw new ConnectionFailedException(exception.getMessage());
         }
     }
@@ -137,6 +133,7 @@ public class InventoryManager {
     private Clothes createClothes(final String input) {
         final String[] attributes = input.split(",");
 
-        return new Clothes(attributes[0], attributes[1], attributes[2], Float.parseFloat(attributes[3]), attributes[4], Integer.parseInt(attributes[5]));
+        return new Clothes(attributes[0], attributes[1], attributes[2],
+                Float.parseFloat(attributes[3]), attributes[4], Integer.parseInt(attributes[5]));
     }
 }

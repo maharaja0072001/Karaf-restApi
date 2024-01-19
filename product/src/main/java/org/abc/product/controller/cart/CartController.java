@@ -1,13 +1,19 @@
 package org.abc.product.controller.cart;
 
+import org.abc.product.ProductCategory;
 import org.abc.product.model.cart.Cart;
 import org.abc.product.service.cart.CartService;
 import org.abc.product.service.cart.impl2.CartServiceImpl;
-import org.abc.authentication.model.User;
-import org.abc.product.model.product.Product;
 
-import javax.ws.rs.*;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.GET;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.core.MediaType;
+
+import java.util.Objects;
 
 /**
  * <p>
@@ -38,7 +44,7 @@ public class CartController {
      * @return returns the single instance of CartController Class.
      */
     public static CartController getInstance() {
-        return cartController == null ? cartController = new CartController() : cartController;
+        return Objects.isNull(cartController) ? cartController = new CartController() : cartController;
     }
 
     /**
@@ -46,14 +52,17 @@ public class CartController {
      * Adds the product to the cart of the specified user.
      * </p>
      *
-     * @param product Refers the product to be added
-     * @param user Refers the user
+     * @param productId Refers the id of the product to be added
+     * @param userId Refers the user id.
+     * @param productCategory Refers the product category.
+     * @return true if product added.
      */
-    @Path("/add")
-    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/add/{userId}/{category}/{productId}")
+    @Produces(MediaType.APPLICATION_JSON)
     @POST
-    public boolean addItem(final Product product, final User user) {
-        return CART_SERVICE.addItem(product, user);
+    public boolean addItem(@PathParam("productId")final int productId, @PathParam("userId")final int userId,
+                           @PathParam("category") final ProductCategory productCategory) {
+        return CART_SERVICE.addItem(productId, userId, productCategory);
     }
 
     /**
@@ -61,14 +70,13 @@ public class CartController {
      * Removes the product from the cart of the specified user.
      * </p>
      *
-     * @param product Refers the product to be added
-     * @param user Refers the user
+     * @param productId Refers the id of the product to be removed.
+     * @param userId Refers the user id.
      */
-    @Path("/remove")
-    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/remove/{userId}/{productId}")
     @DELETE
-    public void removeItem(final Product product, final User user) {
-        CART_SERVICE.removeItem(product, user);
+    public void removeItem(@PathParam("productId")final int productId, @PathParam("userId")final int userId) {
+        CART_SERVICE.removeItem(productId, userId);
     }
 
     /**
@@ -76,14 +84,14 @@ public class CartController {
      * Gets the cart of the specified user id and returns it.
      * </p>
      *
-     * @param user Refers the user who owns the cart.
-     * @return the cart of the user.
+     * @param userId Refers the user id.
+     * @return the {@link Cart} of the user.
      */
-    @Path("/get")
-    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/get/{userId}")
+    @Produces(MediaType.APPLICATION_JSON)
     @GET
-    public Cart getCart(final User user) {
-        return CART_SERVICE.getCart(user);
+    public Cart getCart(@PathParam("userId")final int userId) {
+        return CART_SERVICE.getCart(userId);
     }
 }
 

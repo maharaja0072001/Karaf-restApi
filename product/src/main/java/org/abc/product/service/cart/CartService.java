@@ -1,8 +1,7 @@
 package org.abc.product.service.cart;
 
+import org.abc.product.ProductCategory;
 import org.abc.product.model.cart.Cart;
-import org.abc.authentication.model.User;
-import org.abc.product.model.product.Product;
 
 /**
  * <p>
@@ -19,29 +18,30 @@ public interface CartService {
      * Gets the cart of the current user and returns it.
      * </p>
      *
-     * @param user Refers the current {@link User}
+     * @param userId Refers the user id.
      * @return {@link Cart} of the user.
      */
-    Cart getCart(final User user);
+    Cart getCart(final int userId);
 
     /**
      * <p>
      * Adds the specific product to the cart.
      * </p>
      *
-     * @param user Refers the current {@link User}
-     * @param product Refers the {@link Product} to be added to the cart.
+     * @param userId Refers the user id.
+     * @param productId Refers the id of the product to be added to the cart.
+     * @param productCategory Refers the product category.
      * @return true if the product is added.
      */
-    boolean addItem(final Product product, final User user);
+    boolean addItem(final int productId, final int userId, final ProductCategory productCategory);
 
     /**
      * <p>
      * Removes the specific product from the cart.
      * </p>
      *
-     * @param user Refers the current {@link User}
-     * @param product Refers the {@link Product} to be removed from the cart.
+     * @param userId Refers the user id.
+     * @param productId Refers the id of the product to be removed from the cart.
      */
-    void removeItem(final Product product, final User user);
+    void removeItem(final int productId, final int userId);
 }

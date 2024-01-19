@@ -2,6 +2,8 @@ package org.abc.product;
 
 import org.abc.product.exceptions.ConstantNotFoundException;
 
+import java.util.EnumSet;
+
 /**
  * <p>
  * Provides the status of order.
@@ -47,11 +49,10 @@ public enum OrderStatus {
      * @return the enum value.
      */
     public static OrderStatus valueOf(int id) {
-        for (final OrderStatus orderStatus : values()) {
-            if (orderStatus.id == id) {
-                return orderStatus;
-            }
-        }
-        throw new ConstantNotFoundException(String.format("Constant not found for the id: %d", id));
+        return EnumSet.allOf(OrderStatus.class)
+                .stream()
+                .filter(orderStatus -> orderStatus.id == id)
+                .findFirst()
+                .orElseThrow(() -> new ConstantNotFoundException(String.format("Constant not found for the id: %d", id)));
     }
 }

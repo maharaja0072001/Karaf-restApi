@@ -1,4 +1,4 @@
-package src.main.java.org.abc.product.service.wishlist;
+package org.abc.product.service.wishlist;
 
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 
@@ -21,7 +21,7 @@ public class RestService {
     public void activate() throws Exception {
         JAXRSServerFactoryBean bean = new JAXRSServerFactoryBean();
 
-        bean.setAddress("/user/wishlist");
+        bean.setAddress("/wishlist");
         bean.setBus(BusFactory.getDefaultBus());
         bean.setProvider(new JacksonJsonProvider());
         bean.setServiceBean(WishlistController.getInstance());

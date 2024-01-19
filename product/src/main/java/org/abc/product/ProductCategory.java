@@ -2,6 +2,8 @@ package org.abc.product;
 
 import org.abc.product.exceptions.ConstantNotFoundException;
 
+import java.util.EnumSet;
+
 /**
  * <p>
  * Provides the category of products available.
@@ -47,11 +49,10 @@ public enum ProductCategory {
      * @return the enum value.
      */
     public static ProductCategory valueOf(int id) {
-        for (final ProductCategory productCategory : values()) {
-            if (productCategory.id == id) {
-                return productCategory;
-            }
-        }
-        throw new ConstantNotFoundException(String.format("Constant not found for the id: %d", id));
+    return EnumSet.allOf(ProductCategory.class)
+            .stream()
+            .filter(productCategory -> productCategory.id == id)
+            .findFirst()
+            .orElseThrow(() -> new ConstantNotFoundException(String.format("Constant not found for the id: %d", id)));
     }
 }

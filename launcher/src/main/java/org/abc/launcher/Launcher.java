@@ -16,8 +16,6 @@ import org.apache.logging.log4j.LogManager;
  */
 public class Launcher {
 
-    private static final Logger LOGGER = LogManager.getLogger(Launcher.class);
-
     /**
      * <p>
      * Main entry to the flipkart application.
@@ -25,7 +23,7 @@ public class Launcher {
      *
      */
     public static void launch() {
-        LOGGER.info("Flipkart application started");
+        LogManager.getLogger(Launcher.class).info("Flipkart application started");
         final AuthenticationView authenticationView = AuthenticationView.getInstance();
 
         authenticationView.setHomePageView(HomepageView.getInstance());
